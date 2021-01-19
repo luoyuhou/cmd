@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>git</title>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <style>
+        html, body {
+            width: 98%;
+            margin: 0 auto;
+        }
+        html::-webkit-scrollbar {
+            display: none;
+        }
+        .tab-item, .tab-log {
+            display: none;
+        }
+        .tab-item.active, .tab-log.active {
+            display: block !important;
+        }
+        .item {
+            margin-right: 10px;
+            display: inline-block;
+            margin-bottom: 2px;
+        }
+        .seperator:after {
+            padding-left: 10px;
+            content: '|';
+            color: orangered;
+        }
+    </style>
+    <link rel="stylesheet" href="../../plugins/bootstrap-3.3.7/css/bootstrap.css">
+    <link rel="stylesheet" href="../../plugins/bootstrap-select-1.13.9/dist/css/bootstrap-select.css">
+    <link rel="stylesheet" href="../../plugins/bootstrap-switch-4.0.0-alpha/bootstrap-switch.css">
+    <link rel="stylesheet" href="../../plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
+</head>
+<body>
+<div class="panel">
+    <h2>{{data}}</h2>
+    <div class="input-group" style="margin-bottom: 5px;">
+        <span class="input-group-addon" id="sizing-addon2">Path：</span>
+        <input id="path" type="text" class="form-control" placeholder="path" aria-describedby="sizing-addon2">
+    </div>
+    <div class="bs-example" data-example-id="simple-nav-tabs">
+        <!-- 导航 -->
+        <ul class="nav nav-tabs">
+            <li role="presentation" class="active">
+                <a href="#branch" aria-controls="branch" role="tab" data-toggle="tab">Branch</a>
+            </li>
+            <li role="presentation">
+                <a href="#log" aria-controls="log" role="tab" data-toggle="tab">Log</a>
+            </li>
+            <li role="presentation">
+                <a href="#cmd" aria-controls="cmd" role="tab" data-toggle="tab">CMD</a>
+            </li>
+            <li role="presentation">
+                <a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a>
+            </li>
+        </ul>
+
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade in active" id="branch">
+                <div id="tabs" class="list-group col-md-2 col-xs-2">
+                    <!--tab里面的值应与下面标签页的id一致-->
+                    <a tab="tab-item1" href="#" class="tab list-group-item active">local</a>
+                    <a tab="tab-item2" href="#" class="tab list-group-item">remote</a>
+                    <a tab="tab-item3" href="#" class="tab list-group-item">create branch</a>
+                    <a tab="tab-item4" href="#" class="tab list-group-item">checkout branch</a>
+                </div>
+                <div class="col-md-10 col-xs-10">
+                    <!--id与上面标签里面的tab一致-->
+                    <div id="tab-item1" class="tab-item active">
+                        <button type="button" class="btn btn-default" style="float: right;" onclick="branch('git branch', 1)"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+                        <div class="response"><pre></pre></div>
+                    </div>
+                    <div id="tab-item2" class="tab-item">
+                        <button type="button" class="btn btn-default" style="float: right;" onclick="branch('git branch -a', 2)"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+                        <div class="response"><pre></pre></div>
+                    </div>
+                    <div id="tab-item3" class="tab-item">
+                        <div class="input-group">
+                            <input type="text" id="create_branch" class="form-control" aria-label="Text input with segmented button dropdown">
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-default" onclick="createOrRemoveBranch()">Action</button>
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span id="type">Create</span>
+                                    <span class="caret"></span>
+                                    <!--<span class="sr-only">Toggle Dropdown</span>-->
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right">
+                                    <li><a href="#" onclick="changeType('Create')">create</a></li>
+                                    <li><a href="#" onclick="changeType('Remove')">remove</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="response"><pre></pre></div>
+                    </div>
+                    <div id="tab-item4" class="tab-item">
+                        <label for="origin">From：</label>
+                        <select class="selectpicker" data-live-search="true" id="origin" disabled></select>
+                        <label for="target" style="margin-left: 50px;">To：</label>
+                        <select class="selectpicker" data-live-search="true" id="target"></select>
+                        <button type="button" class="btn btn-default" style="float: right;" onclick="getLocalBranch()"><span class="glyphicon glyphicon-refresh" aria-hidden="true">branch</span></button>
+                        <button type="button" class="btn btn-default" aria-label="Left Align" style="float: right;" onclick="checkout()"><span class="glyphicon glyphicon-play-circle" aria-hidden="true">Action</span></button>
+                        <div class="response" style="margin-top: 5px;"><pre></pre></div>
+                    </div>
+                </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane fade" id="log">
+                <div id="logs" class="list-group col-md-2 col-xs-2">
+                    <!--tab里面的值应与下面标签页的id一致-->
+                    <a tab="tab-log1" href="#" class="tab list-group-item active">log</a>
+                    <a tab="tab-log2" href="#" class="tab list-group-item">reflog</a>
+                </div>
+                <div class="col-md-10 col-xs-10">
+                    <!--id与上面标签里面的tab一致-->
+                    <div id="tab-log1" class="tab-log active">
+                        <div class="input-group" style="margin: 5px 0;">
+                            <div class="item seperator">
+                                <label for="oneline">oneline:</label>
+                                <input id="oneline" type="checkbox" name="oneline" data-size="mini">
+                            </div>
+                            <div class="item seperator">
+                                <label for="pretty">pretty:</label>
+                                <input id="pretty" type="checkbox" name="pretty" data-size="mini">
+                            </div>
+                            <div class="item seperator">
+                                <label for="graph">graph:</label>
+                                <input id="graph" type="checkbox" name="graph" data-size="mini">
+                            </div>
+                            <div class="item seperator">
+                                <label for="stat">stat:</label>
+                                <input id="stat" type="checkbox" name="stat" data-size="mini">
+                            </div>
+                            <div class="item" style="vertical-align: middle;">
+                                <label for="branch_log">Branch:</label>
+                                <select class="selectpicker" data-live-search="true" id="branch_log"></select>
+                            </div>
+                            <span style="margin-right: 10px; color: orangered;">|</span>
+                            <div class="item" style="vertical-align: middle; width: 150px;">
+                                <div class="input-group">
+                                    <span class="input-group-addon" >commit:</span>
+                                    <input id="commit" type="number" min="1" class="form-control" placeholder="commit" aria-describedby="sizing-addon2">
+                                </div>
+                            </div>
+                            <div class="item" style="vertical-align: middle;">
+                                <div class="input-group">
+                                    <span class="input-group-addon" >Author:</span>
+                                    <input id="author" type="text" class="form-control" placeholder="author" aria-describedby="sizing-addon2">
+                                </div>
+                            </div>
+                            <div class="item" style="vertical-align: middle;;">
+                                <div class="input-group">
+                                    <span class="input-group-addon" >start time:</span>
+                                    <input id="since" type="text" class="form-control datetime" placeholder="start datetime" aria-describedby="sizing-addon2">
+                                </div>
+                            </div>
+                            <div class="item" style="vertical-align: middle;;">
+                                <div class="input-group">
+                                    <span class="input-group-addon" >end time:</span>
+                                    <input id="until" type="text" class="form-control datetime" placeholder="end datetime" aria-describedby="sizing-addon2">
+                                </div>
+                            </div>
+                            <div class="item">
+                                <button type="button" class="btn btn-default" aria-label="Left Align" onclick="log_v2()"><span class="glyphicon glyphicon-play-circle" aria-hidden="true">Action</span></button>
+                                <button type="button" class="btn btn-default" onclick="getLocalBranchToLog()"><span class="glyphicon glyphicon-refresh" aria-hidden="true">branch</span></button>
+                            </div>
+                        </div>
+                        <div class="response"><pre></pre></div>
+                    </div>
+                    <div id="tab-log2" class="tab-log">
+                        <button type="button" class="btn btn-default" style="float: right;" onclick="log('git reflog', 2)"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+                        <div class="response"><pre></pre></div>
+                    </div>
+                </div>
+            </div>
+
+            <div role="tabpanel" class="tab-pane fade" id="cmd">
+                <div class="item" style="vertical-align: middle;">
+                    <div class="input-group">
+                        <label for="history" class="input-group-addon">History:</label>
+                        <select class="selectpicker" data-live-search="true" id="history" onchange="selectOnChange(this)"></select>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input id="command" type="text" class="form-control" placeholder="please put...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" onclick="clear_cmd()">Clear!</button>
+                    </span>
+                </div>
+                <div class="response"><pre></pre></div>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="settings">4</div>
+        </div>
+    </div>
+</div>
+
+<script src="../../js/jquery.3.3.1.js"></script>
+<script src="../../plugins/bootstrap-3.3.7/js/bootstrap.js"></script>
+<script src="../../plugins/bootstrap-select-1.13.9/dist/js/bootstrap-select.js"></script>
+<script src="../../plugins/bootstrap-switch-4.0.0-alpha/bootstrap-switch.js"></script>
+<script src="../../plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script src="../../js/local/git/branch.js"></script>
+<script src="../../js/local/git/log.js"></script>
+<script src="../../js/local/git/cmd.js"></script>
+<script>
+  async function exec(cmd) {
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: '',
+        type: 'POST',
+        data: {
+          path: $('#path').val(),
+          cmd
+        },
+        success: (res) => {
+          resolve(res);
+        }
+      })
+    });
+  }
+
+  // switch
+  $('[name="oneline"]').bootstrapSwitch();
+  $('[name="pretty"]').bootstrapSwitch();
+  $('[name="graph"]').bootstrapSwitch();
+  $('[name="stat"]').bootstrapSwitch();
+
+  // datepicker
+  $('input.datetime').datetimepicker({
+    language: 'zh-CN',
+    weekStart: 1,
+    todayBtn: 1,
+    autoclose: 1,
+    todayHighlight: 1,
+    startView: 2,
+    minuteStep: 1,
+    maxView: 4,
+    minView: 0,
+    forceParse: 0,
+    format: 'yyyy-mm-dd hh:ii:ss'
+  });
+
+
+</script>
+</body>
+</html>

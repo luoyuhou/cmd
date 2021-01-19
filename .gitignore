@@ -1,1 +1,9 @@
-.idea
+.idea/
+.vscode/
+node_modules/
+runtime/
+build/
+tmp/
+temp/
+package-lock.json
+.env
