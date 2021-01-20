@@ -1,8 +1,8 @@
-import Index from "./controller/index";
+import Index from './controller/index'
 
 export const Routes: any = [{
-    method: 'get',
-    route: '',
-    controller: Index,
-    action: 'index'
+  method: 'get',
+  route: '',
+  controller: Index,
+  action: 'index'
 }];
